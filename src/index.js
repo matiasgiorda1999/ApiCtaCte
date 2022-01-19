@@ -19,6 +19,9 @@ app.use(express.static(path.join(__dirname,'images')));
 app.use(require('./routes/eliminarTabla'));
 app.use(require('./routes/empresas'));
 app.use(require('./routes/usuarios'));
+app.use(require('./routes/clientes'));
+app.use(require('./routes/tiposComprobantes'));
+app.use(require('./routes/cuentaCorriente'));
 
 //Starting server
 app.listen(app.get('port'), () => {
