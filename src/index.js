@@ -16,7 +16,6 @@ app.use(express.static(path.join(__dirname,'images')));
 
 //Routes - Nosotros vamos a poder crear urls de nuestro server para poder procesar datos, recibirlos, reenviar datos, etc. Es
 //         tan solo la manera en que vamos a comunicar el server con el navegador
-app.use(require('./routes/eliminarTabla'));
 app.use(require('./routes/empresas'));
 app.use(require('./routes/usuarios'));
 app.use(require('./routes/clientes'));

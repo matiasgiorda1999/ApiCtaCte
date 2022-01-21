@@ -6,7 +6,14 @@ const mysqlConnection = require('../database');
 router.get('/usuarios',(req,res) => {
     const{ nombre, contraseña} = req.query;
     
-    const sqlQuery = `SELECT nombre FROM usuarios WHERE nombre=? AND contraseña=?`
+    const sqlQuery = `
+                SELECT 
+                    nombre 
+                FROM 
+                    usuarios 
+                WHERE 
+                    nombre=? AND contraseña=?`;
+
     mysqlConnection.query(sqlQuery,[nombre,contraseña],(error, rows, fields) => {
         if(!error){
             if(rows.length > 0){
@@ -16,7 +23,7 @@ router.get('/usuarios',(req,res) => {
                 res.json({msj: 'Incorrecto'})
             }
         }else{
-            console.log(error)
+            res.json({msj: 'No se pudo realizar la consulta', errorMsj: error})
         }
     });
 });

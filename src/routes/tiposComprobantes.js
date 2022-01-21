@@ -6,8 +6,11 @@ const mysqlConnection = require('../database');
 router.post('/tiposcomprobantes',(req,res) => {
     const { Nombre, AfipComprobanteId, CodigoUNIX, DebeHaber, CodigoCtacte, CodigoIVA, CitiVentas, ServicioId } = req.body;
     
-    const sqlQuery = `INSERT INTO tiposcomprobantes VALUES(${Nombre},${AfipComprobanteId},${CodigoUNIX},${DebeHaber}
-                        ,${CodigoCtacte},${CodigoIVA},${CitiVentas},${ServicioId})`
+    const sqlQuery = `
+            INSERT INTO tiposcomprobantes 
+            VALUES
+                (${Nombre},${AfipComprobanteId},${CodigoUNIX},${DebeHaber}
+                ,${CodigoCtacte},${CodigoIVA},${CitiVentas},${ServicioId})`
     
     mysqlConnection.query(sqlQuery,(error, rows, fields) => {
         if(!error){
@@ -23,10 +26,14 @@ router.put('/tiposcomprobantes/:tipocomprobanteid',(req,res) => {
     
     const { Nombre, AfipComprobanteId, CodigoUNIX, DebeHaber, CodigoCtacte, CodigoIVA, CitiVentas, ServicioId } = req.body;
     
-    const sqlQuery = `UPDATE tiposcomprobantes SET Nombre=${Nombre}, AfipComprobanteId=${AfipComprobanteId}, 
-                CodigoUNIX=${CodigoUNIX}, DebeHaber=${DebeHaber}, CodigoCtacte=${CodigoCtacte}, CodigoIVA=${CodigoIVA}, 
-                CitiVentas=${CitiVentas}, ServicioId=${ServicioId}
-                WHERE TipoComprobanteId=${TipoComprobanteId}`
+    const sqlQuery = `
+                UPDATE tiposcomprobantes 
+                SET 
+                    Nombre=${Nombre}, AfipComprobanteId=${AfipComprobanteId}, 
+                    CodigoUNIX=${CodigoUNIX}, DebeHaber=${DebeHaber}, CodigoCtacte=${CodigoCtacte}, CodigoIVA=${CodigoIVA}, 
+                    CitiVentas=${CitiVentas}, ServicioId=${ServicioId}
+                WHERE 
+                    TipoComprobanteId=${TipoComprobanteId}`
 
     
     mysqlConnection.query(sqlQuery,(error, rows, fields) => {
