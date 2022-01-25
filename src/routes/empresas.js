@@ -5,17 +5,24 @@ const mysqlConnection = require('../database');
 
 router.get('/empresas',(req,res) => {
 
-    const sqlQuery = `
+    const sqlSelect = `
                     SELECT 
                         * 
                     FROM 
                         empresas`
 
-    mysqlConnection.query(sqlQuery,(error, rows, fields) => {
-        if(!error){
-            res.json(rows);
-        }else{
-            res.json({msj: 'No se pudo realizar la consulta', errorMsj: error})
+    mysqlConnection.getConnection((err, db) => {
+        if(err) console.log(err)
+
+        else{
+            db.query(sqlSelect,(error, rows, fields) => {
+                if(!error){
+                    res.json(rows);
+                }else{
+                    res.json({msj: 'No se pudo realizar la consulta', errorMsj: error});
+                }
+            });
+            db.release();
         }
     });
 });
@@ -24,7 +31,7 @@ router.get('/empresas/:id',(req,res) => {
 
     const { id } = req.params;
     
-    const sqlQuery = `
+    const sqlSelect = `
                     SELECT 
                         e.idempresa,
                         e.nombre,
@@ -34,11 +41,18 @@ router.get('/empresas/:id',(req,res) => {
                     WHERE 
                         uxe.idUsuario = ?`;
 
-    mysqlConnection.query(sqlQuery,[id],(error, rows, fields) => {
-        if(!error){
-            res.json(rows);
-        }else{
-            res.json({msj: 'No se pudo realizar la consulta', errorMsj: error})
+    mysqlConnection.getConnection((err, db) => {
+        if(err) console.log(err)
+        
+        else{
+            db.query(sqlSelect,[id],(error, rows, fields) => {
+                if(!error){
+                    res.json(rows);
+                }else{
+                    res.json({msj: 'No se pudo realizar la consulta', errorMsj: error})
+                }
+            });
+            db.release();
         }
     });
 });

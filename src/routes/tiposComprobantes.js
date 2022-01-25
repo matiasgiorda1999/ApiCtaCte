@@ -6,17 +6,24 @@ const mysqlConnection = require('../database');
 router.post('/tiposcomprobantes',(req,res) => {
     const { Nombre, AfipComprobanteId, CodigoUNIX, DebeHaber, CodigoCtacte, CodigoIVA, CitiVentas, ServicioId } = req.body;
     
-    const sqlQuery = `
+    const sqlInsert = `
             INSERT INTO tiposcomprobantes 
             VALUES
                 (${Nombre},${AfipComprobanteId},${CodigoUNIX},${DebeHaber}
                 ,${CodigoCtacte},${CodigoIVA},${CitiVentas},${ServicioId})`
     
-    mysqlConnection.query(sqlQuery,(error, rows, fields) => {
-        if(!error){
-            res.json({msj: 'Registro tiposcomprobantes insertado exitosamente'});
-        }else{
-            res.json({msj: 'No se ha podido insertar el registro tiposcomprobantes', errorMsj: error})
+    mysqlConnection.getConnection((err, db) => {
+        if(err) console.log(err)
+
+        else{
+            db.query(sqlInsert,(error, rows, fields) => {
+                if(!error){
+                    res.json({msj: 'Registro tiposcomprobantes insertado exitosamente'});
+                }else{
+                    res.json({msj: 'No se ha podido insertar el registro tiposcomprobantes', errorMsj: error});
+                }
+            });
+            db.release();
         }
     });
 });
@@ -26,7 +33,7 @@ router.put('/tiposcomprobantes/:tipocomprobanteid',(req,res) => {
     
     const { Nombre, AfipComprobanteId, CodigoUNIX, DebeHaber, CodigoCtacte, CodigoIVA, CitiVentas, ServicioId } = req.body;
     
-    const sqlQuery = `
+    const sqlUpdate = `
                 UPDATE tiposcomprobantes 
                 SET 
                     Nombre=${Nombre}, AfipComprobanteId=${AfipComprobanteId}, 
@@ -36,11 +43,18 @@ router.put('/tiposcomprobantes/:tipocomprobanteid',(req,res) => {
                     TipoComprobanteId=${TipoComprobanteId}`
 
     
-    mysqlConnection.query(sqlQuery,(error, rows, fields) => {
-        if(!error){
-            res.json({msj: 'Registro tiposcomprobantes modificado exitosamente'});
-        }else{
-            res.json({msj: 'No se ha podido modificar el registro tiposcomprobantes', errorMsj: error})
+    mysqlConnection.getConnection((err, db) => {
+        if(err) console.log(err)
+
+        else{
+            db.query(sqlUpdate,(error, rows, fields) => {
+                if(!error){
+                    res.json({msj: 'Registro tiposcomprobantes modificado exitosamente'});
+                }else{
+                    res.json({msj: 'No se ha podido modificar el registro tiposcomprobantes', errorMsj: error});
+                }
+            });
+            db.release();
         }
     });
 });

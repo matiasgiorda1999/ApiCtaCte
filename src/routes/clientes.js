@@ -17,7 +17,7 @@ router.post('/clientes',(req,res) => {
         Dominio1, Marca2, Modelo2, Dominio2, Marca3, Modelo3, Dominio3, CodPresupuestarioId, Observaciones, cai, SubListaPrecioId, 
         CobradorId } = req.body;
     
-    const sqlQuery = `
+    const sqlInsert = `
                 INSERT INTO clientes 
                 VALUES 
                     (${NroCtaCte}, ${Nombre}, ${PersonaJuridica}, ${CategoriaId}, ${SeccionId}, 
@@ -36,11 +36,17 @@ router.post('/clientes',(req,res) => {
                     ${BienesHipoteca}, ${Rodados}, ${Marca1}, ${Modelo1}, ${Dominio1}, ${Marca2}, ${Modelo2}, ${Dominio2}, ${Marca3}, 
                     ${Modelo3}, ${Dominio3}, ${CodPresupuestarioId}, ${Observaciones}, ${cai}, ${SubListaPrecioId}, ${CobradorId})`
     
-    mysqlConnection.query(sqlQuery,(error, rows, fields) => {
-        if(!error){
-            res.json({msj: 'Registro cliente insertado exitosamente'});
-        }else{
-            res.json({msj: 'No se ha podido insertar el registro cliente', errorMsj: error})
+    mysqlConnection.getConnection((err, db) => {
+        if(err) console.log(err)
+        else{
+            db.query(sqlInsert,(error, rows, fields) => {
+                if(!error){
+                    res.json({msj: 'Registro cliente insertado exitosamente'});
+                }else{
+                    res.json({msj: 'No se ha podido insertar el registro cliente', errorMsj: error});
+                }
+            });
+            db.release();
         }
     });
 });
@@ -61,7 +67,7 @@ router.put('/clientes/:clienteid',(req,res) => {
         Dominio1, Marca2, Modelo2, Dominio2, Marca3, Modelo3, Dominio3, CodPresupuestarioId, Observaciones, cai, SubListaPrecioId, 
         CobradorId } = req.body;
     
-    const sqlQuery = `
+    const sqlUpdate = `
                     UPDATE clientes 
                     SET 
                         NroCtaCte=${NroCtaCte}, Nombre=${Nombre}, PersonaJuridica=${PersonaJuridica}, 
@@ -97,11 +103,18 @@ router.put('/clientes/:clienteid',(req,res) => {
                     WHERE 
                         ClienteId=${ClienteId}`
     
-    mysqlConnection.query(sqlQuery,(error, rows, fields) => {
-        if(!error){
-            res.json({msj: 'Registro cliente modificado exitosamente'});
-        }else{
-            res.json({msj: 'No se ha podido modificar el registro cliente', errorMsj: error})
+    mysqlConnection.getConnection((err, db) => {
+        if(err) console.log(err)
+
+        else{
+            db.query(sqlUpdate,(error, rows, fields) => {
+                if(!error){
+                    res.json({msj: 'Registro cliente modificado exitosamente'});
+                }else{
+                    res.json({msj: 'No se ha podido modificar el registro cliente', errorMsj: error});
+                }
+            });
+            db.release();
         }
     });
 });

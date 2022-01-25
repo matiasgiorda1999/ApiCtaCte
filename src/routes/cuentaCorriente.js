@@ -7,18 +7,25 @@ router.post('/ctacte',(req,res) => {
     const { ClienteId, Fecha, NroAsiento, TipoComprobanteId, Importe, DH, Gravado, Alicuota, FVto, Cuota,
             Letra, Prefijo, Nro, Saldo, Cancelado, Detalle, Cotizacion, FCarga, Fpago, MovCajaId } = req.body;
     
-    const sqlQuery = `
+    const sqlInsert = `
             INSERT INTO ctacte 
             VALUES
                 (${ClienteId},${Fecha},${NroAsiento},${TipoComprobanteId},${Importe}
                 ,${DH},${Gravado},${Alicuota},${FVto},${Cuota},${Letra},${Prefijo},${Nro},${Saldo}
                 ,${Cancelado},${Detalle},${Cotizacion},${FCarga},${Fpago},${MovCajaId})`
     
-    mysqlConnection.query(sqlQuery,(error, rows, fields) => {
-        if(!error){
-            res.json({msj: 'Registro ctacte insertado exitosamente'});
-        }else{
-            res.json({msj: 'No se ha podido insertar el registro ctacte', errorMsj: error})
+    mysqlConnection.getConnection((err, db) => {
+        if(err) console.log(err)
+
+        else{
+            db.query(sqlInsert,(error, rows, fields) => {
+                if(!error){
+                    res.json({msj: 'Registro ctacte insertado exitosamente'});
+                }else{
+                    res.json({msj: 'No se ha podido insertar el registro ctacte', errorMsj: error});
+                }
+            });
+            db.release();
         }
     });
 });
@@ -29,7 +36,7 @@ router.put('/ctacte/:ctacteid',(req,res) => {
     const { ClienteId, Fecha, NroAsiento, TipoComprobanteId, Importe, DH, Gravado, Alicuota, FVto, Cuota,
             Letra, Prefijo, Nro, Saldo, Cancelado, Detalle, Cotizacion, FCarga, Fpago, MovCajaId } = req.body;
     
-    const sqlQuery = `
+    const sqlUpdate = `
                 UPDATE ctacte 
                 SET 
                     ClienteId=${ClienteId}, Fecha=${Fecha}, NroAsiento=${NroAsiento}, 
@@ -40,11 +47,18 @@ router.put('/ctacte/:ctacteid',(req,res) => {
                 WHERE 
                     CtaCteId=${CtaCteId}`
     
-    mysqlConnection.query(sqlQuery,(error, rows, fields) => {
-        if(!error){
-            res.json({msj: 'Registro ctacte modificado exitosamente'});
-        }else{
-            res.json({msj: 'No se ha podido modificar el registro ctacte', errorMsj: error})
+    mysqlConnection.getConnection((err, db) => {
+        if(err) console.log(err)
+
+        else{
+            db.query(sqlUpdate,(error, rows, fields) => {
+                if(!error){
+                    res.json({msj: 'Registro ctacte modificado exitosamente'});
+                }else{
+                    res.json({msj: 'No se ha podido modificar el registro ctacte', errorMsj: error});
+                }
+            });
+            db.release();
         }
     });
 });
@@ -53,7 +67,7 @@ router.get('/ctacte',(req, res) => {
     
     const { fechaDesde, fechaHasta, idCliente } = req.query;
 
-    const sqlQuery = `
+    const sqlSelect = `
             SELECT 
                 CtaCte.Fecha,
                 RTRIM( Case  WHEN LEFT(ctacte.detalle, 15) <> 'NUESTRA ENTREGA' AND LEFT(ctacte.detalle, 10) <> 'SU ENTREGA' AND ctacte.detalle <> '' and ctacte.detalle is not null THEN CTACTE.DETALLE ELSE TIPOSCOMPROBANTES.NOMBRE END) AS Detalle,
@@ -75,11 +89,18 @@ router.get('/ctacte',(req, res) => {
             WHERE 
                 ((fecha between '${fechaDesde}' and '${fechaHasta}') or (fecha < '${fechaDesde}' and fvto >= '${fechaDesde}'))  and ctacte.clienteid = ${idCliente} Order by 1,haber`
 
-    mysqlConnection.query(sqlQuery,(error, rows, fields) => {
-        if(!error){
-            res.json(rows);
-        }else{
-            res.json({msj: 'No se pudo realizar la consulta', errorMsj: error})
+    mysqlConnection.getConnection((err, db) => {
+        if(err) console.log(err)
+
+        else{
+            db.query(sqlSelect,(error, rows, fields) => {
+                if(!error){
+                    res.json(rows);
+                }else{
+                    res.json({msj: 'No se pudo realizar la consulta', errorMsj: error});
+                }
+            });
+            db.release();
         }
     });
 })
