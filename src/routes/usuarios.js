@@ -5,7 +5,7 @@ const router = express.Router();
 const mysqlConnection = require('../database');
 
 router.get('/usuarios',(req,res) => {
-    const{ email, contraseña} = req.query;
+    const{ email, contrasena} = req.query;
     
     const sqlSelect = `
                 SELECT 
@@ -13,13 +13,13 @@ router.get('/usuarios',(req,res) => {
                 FROM 
                     usuarios 
                 WHERE 
-                    email=? AND contraseña=?`;
+                    email=? AND contrasena=?`;
 
     mysqlConnection.getConnection((err, db) => {
         if(err) console.log(err)
 
         else{
-            db.query(sqlSelect,[email,contraseña],(error, rows, fields) => {
+            db.query(sqlSelect,[email,contrasena],(error, rows, fields) => {
                 if(!error){
                     if(rows.length > 0){
                         res.json({msj: 'Correcto'});
@@ -55,12 +55,12 @@ router.put('/usuarios', verifyToken ,(req, res) => {
         if(error){
             res.sendStatus(403);
         }else{
-            const { dni, cuit, email, contraseña } = req.body;
+            const { dni, cuit, email, contrasena } = req.body;
 
             const sqlUpdate = `
                             UPDATE usuarios
                             SET 
-                                contraseña=?
+                                contrasena=?
                             WHERE
                                 dni=?
                                 AND CUIT=?
@@ -70,7 +70,7 @@ router.put('/usuarios', verifyToken ,(req, res) => {
                 if(err) console.log(err)
         
                 else{
-                    db.query(sqlUpdate,[contraseña, dni, cuit, email], (error, rows, fields) => {
+                    db.query(sqlUpdate,[contrasena, dni, cuit, email], (error, rows, fields) => {
                         if(!error){
                             res.json({msj: 'Registro usuario modificado exitosamente'});
                         }else{

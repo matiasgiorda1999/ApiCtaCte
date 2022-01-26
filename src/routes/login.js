@@ -14,7 +14,7 @@ router.post('/login',(req,res) => {
                 usuarios
             WHERE
                 email=?
-                AND contraseña=?`;
+                AND contrasena=?`;
     let user;
 
     mysqlConnection.getConnection((err,db) => {
