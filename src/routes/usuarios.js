@@ -55,22 +55,20 @@ router.put('/usuarios', verifyToken ,(req, res) => {
         if(error){
             res.sendStatus(403);
         }else{
-            const { dni, cuit, email, contrasena } = req.body;
-
+            const user = authData.user;
+            const { password } = req.body;
             const sqlUpdate = `
                             UPDATE usuarios
                             SET 
                                 contrasena=?
                             WHERE
-                                dni=?
-                                AND CUIT=?
-                                AND email=?`;
+                                id=?`;
             
             mysqlConnection.getConnection((err,db) => {
                 if(err) console.log(err)
         
                 else{
-                    db.query(sqlUpdate,[contrasena, dni, cuit, email], (error, rows, fields) => {
+                    db.query(sqlUpdate,[password,user.id], (error, rows, fields) => {
                         if(!error){
                             res.json({msj: 'Registro usuario modificado exitosamente'});
                         }else{
@@ -109,6 +107,42 @@ router.delete('/usuarios', verifyToken ,(req,res) => {
                             res.json({msj: 'Registro usuario eliminado exitosamente'});
                         }else{
                             res.json({msj: 'No se ha podido eliminar el registro usuario', errorMsj: error});
+                        }
+                    });
+                }
+            });
+        }
+    });
+});
+
+router.get('/usuarios/getIdClient', verifyToken , (req,res) => {
+
+    jwt.verify(req.token, 'secretKey', (error, authData) => {
+        if(error){
+            res.sendStatus(403);
+        }else{
+            const user = authData.user;
+
+            const { idEmpresa } = req.query; 
+
+            const sqlSelect = `SELECT 
+                                    ClienteId 
+                                FROM 
+                                    clientes 
+                                WHERE 
+                                    EmpresaId=?
+                                    AND Email=?
+                                    AND NroDoc=?
+                                    AND CUIT=? `;
+            mysqlConnection.getConnection((err,db) => {
+                if(err) console.log(err)
+                                
+                else{
+                    db.query(sqlSelect,[idEmpresa, user.email, user.dni, user.CUIT], (error, rows, fields) => {
+                        if(!error){
+                            res.json(rows[0]);
+                        }else{
+                            res.json({msj: 'No se ha podido realizar la consulta', errorMsj: error});
                         }
                     });
                 }

@@ -33,11 +33,19 @@ router.get('/empresas/:id',(req,res) => {
     
     const sqlSelect = `
                     SELECT 
-                        e.idempresa,
-                        e.nombre,
-                        e.imagenURL 
+                        e.idempresa, e.CUIT, e.nombre, e.imagenURL, e.calle, e.numeroCalle, e.Localidad, 
+                        ap.Nombre AS Provincia, 
+                        apa.Nombre AS Pais, 
+                        ar.Nombre AS Responsable, 
+                        ib.Nombre AS IngBrutoCondicion
+                        
                     FROM 
-                        empresas e INNER JOIN usuariosxempresas uxe ON e.idempresa = uxe.idEmpresa 
+                        empresas e 
+                        INNER JOIN usuariosxempresas uxe ON e.idempresa = uxe.idEmpresa 
+                        INNER JOIN afipprovincias ap ON e.AFIPProvinciaId = ap.AfipProvinciaId
+                        INNER JOIN afippaises apa ON e.AFIPPaisId = apa.AFIPPaisId
+                        INNER JOIN afipresponsables ar ON e.AFIPResponsableId = ar.AfipResponsableId
+                        INNER JOIN ingbrutoscondiciones ib ON e.AFIPIngBrutosId = ib.IngBrutosCondicionId
                     WHERE 
                         uxe.idUsuario = ?`;
 
