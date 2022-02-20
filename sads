@@ -1,0 +1,8 @@
+"SisaScoringId", "ContabilidadCostos", "IngBrutosAlicuota", "CUITExpo"
+
+
+ ServicioId
+ "codigoTipo", "EntidadId", "NombreAbreviado", "Tiponumerador", "mueveStock", "usaEscaner", "usaFacturaElectronica"
+
+ Fpago, MovCajaId, 
+ CuentaContableID, cierreMensual, Tieneimagen, FAplica

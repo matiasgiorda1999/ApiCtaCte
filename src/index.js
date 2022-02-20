@@ -10,7 +10,7 @@ app.set('port',process.env.PORT || 3001);
 
 //Middlewares - Funciones que se ejecutan antes de que proceses algo. Si estas esperando a que el server reciba algun archivo, 
 //              antes de eso puedes ejecutar una funcion para procesar esos archivos
-app.use(express.json());
+app.use(express.json({limit: "500mb"}));
 app.use(cors());
 app.use(express.static(path.join(__dirname,'images')));
 
@@ -18,11 +18,10 @@ app.use(express.static(path.join(__dirname,'images')));
 //         tan solo la manera en que vamos a comunicar el server con el navegador
 app.use(require('./routes/empresas'));
 app.use(require('./routes/usuarios'));
-app.use(require('./routes/clientes'));
 app.use(require('./routes/email'));
-app.use(require('./routes/tiposComprobantes'));
 app.use(require('./routes/cuentaCorriente'));
 app.use(require('./routes/login'));
+app.use(require('./routes/migracionDB'));
 
 //Starting server
 app.listen(app.get('port'), () => {
