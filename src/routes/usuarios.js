@@ -131,9 +131,9 @@ router.get('/usuarios/getIdClient', verifyToken , (req,res) => {
                                     clientes 
                                 WHERE 
                                     EmpresaId=?
-                                    AND Email=?
-                                    AND NroDoc=?
-                                    AND CUIT=? `;
+                                    AND (Email=?
+                                    OR NroDoc=?
+                                    OR CUIT=?) `;
             mysqlConnection.getConnection((err,db) => {
                 if(err) console.log(err)
                                 

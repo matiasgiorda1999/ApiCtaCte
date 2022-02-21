@@ -5,7 +5,7 @@ const mysqlConnection = require('../database');
 
 router.get('/ctacte',(req, res) => {
     
-    const { fechaDesde, fechaHasta, idCliente } = req.query;
+    const { fechaDesde, fechaHasta, idCliente, idEmpresa } = req.query;
 
     const sqlSelect = `
             SELECT 
@@ -35,7 +35,7 @@ router.get('/ctacte',(req, res) => {
                 left join AFIPresponsables on clientes.AFIPResponsableId = AFIPresponsables.AfipResponsableId
                 left join ingbrutoscondiciones on clientes.IngBrutosCondicionId = ingbrutoscondiciones.IngBrutosCondicionId 
             WHERE 
-                ((fecha between '${fechaDesde}' and '${fechaHasta}') or (fecha < '${fechaDesde}' and fvto >= '${fechaDesde}'))  and ctacte.clienteid = ${idCliente} Order by 1,haber`
+                ((fecha between '${fechaDesde}' and '${fechaHasta}') or (fecha < '${fechaDesde}' and fvto >= '${fechaDesde}'))  and ctacte.clienteid = ${idCliente} and ctacte.EmpresaId = ${idEmpresa} Order by 1,haber`
 
     mysqlConnection.getConnection((err, db) => {
         if(err) console.log(err)

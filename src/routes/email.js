@@ -20,16 +20,17 @@ router.post('/sendEmail/newUser',(req,res) => {
                         clientes
                     WHERE 
                         NroDoc=? 
-                        AND CUIT=? 
-                        AND Email=?`
+                        OR CUIT=?`
 
     mysqlConnection.getConnection((err, db) => {
         if(err) console.log(err)
 
         else{
-            db.query(sqlSelectCliente,[dni, cuit, email],(error, rows, fields) => {
+            db.query(sqlSelectCliente,[dni, cuit],(error, rows, fields) => {
                 if(!error){
                     if(rows.length !== 0){
+                        const client = rows[0];
+
                         const sqlSelectUsuario = `SELECT 
                                                     dni
                                                 FROM usuarios
@@ -52,7 +53,7 @@ router.post('/sendEmail/newUser',(req,res) => {
                                                     VALUES (?,?,?,?,?)`;
             
                                             const code = generateCode();
-                                            const nombre = rows[0].Nombre
+                                            const nombre = client.Nombre
             
                                             db.query(sqlInsert,[dni, cuit, email, nombre, code],(error, rows, fields) => {
                                                 if(!error) {
@@ -60,10 +61,10 @@ router.post('/sendEmail/newUser',(req,res) => {
                                                     const sqlSelectUsuariosXEmpresas = `SELECT 
                                                                                     id, EmpresaId 
                                                                                 FROM 
-                                                                                    usuarios u INNER JOIN clientes c ON u.dni = c.NroDoc AND u.CUIT = c.CUIT AND u.email = c.Email
+                                                                                    usuarios u INNER JOIN clientes c ON u.dni = c.NroDoc OR u.CUIT = c.CUIT OR u.email = c.Email
                                                                                 WHERE
-                                                                                    u.dni = ? AND u.CUIT = ? AND u.email = ?`
-                                                    db.query(sqlSelectUsuariosXEmpresas,[dni, cuit, email], (error, rows, fields) => {
+                                                                                    u.dni = ? OR u.CUIT = ?`
+                                                    db.query(sqlSelectUsuariosXEmpresas,[dni, cuit], (error, rows, fields) => {
                                                         if(!error){
                                                             const usuariosXEmpresas = rows;
                                                             for( let i=0 ; i < usuariosXEmpresas.length ; i++){
