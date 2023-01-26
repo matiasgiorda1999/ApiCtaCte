@@ -52,7 +52,7 @@ class UserManagementSystem {
               LEFT JOIN AFIPProvincias prov ON c.AFIPProvinciaId = prov.AfipProvinciaId
               LEFT JOIN AFIPresponsables resp ON c.AFIPResponsableId = resp.AfipResponsableId
               LEFT JOIN ingbrutoscondiciones ingbrut ON c.IngBrutosCondicionId = ingbrut.IngBrutosCondicionId 
-            WHERE c.EmpresaId='${enterprise}' AND c.CUIT='20-25941807-1'`;
+            WHERE c.EmpresaId='${enterprise}' AND c.CUIT='${cuit}'`;
   };
 
   async getClientData(queryParams) {
