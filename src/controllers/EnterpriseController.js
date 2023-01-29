@@ -11,6 +11,10 @@ class EnterpriseController {
     return await this.#enterpriseManagementSystem.getEnterprise(enterpriseId);
   }
 
+  async createEnterprise(enterprise) {
+    return await this.#enterpriseManagementSystem.createEnterprise(enterprise);
+  }
+
   async getEnterprisesFilteredBy(queryParams) {
     return await this.#enterpriseManagementSystem.getEnterprisesFilteredBy(
       queryParams

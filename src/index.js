@@ -20,6 +20,7 @@ app.use(require("./routes/checkingAccountRoute"));
 app.use(require("./routes/receiptPaymentRoute"));
 app.use(require("./routes/userRoute"));
 app.use(require("./routes/enterpriseRoute"));
+app.use(require("./routes/afipRoute"));
 
 //Starting server
 app.listen(app.get("port"), () => {

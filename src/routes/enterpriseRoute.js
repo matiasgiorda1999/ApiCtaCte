@@ -47,4 +47,25 @@ router.get("/empresas", checkJwt, async ({ query }, response) => {
   }
 });
 
+router.post("/empresas", checkJwt, async ({ body }, response) => {
+  try {
+    const enterpriseController = new EnterpriseController();
+    const enterpriseValidationRequest = new EnterpriseValidationRequest();
+    enterpriseValidationRequest.validateEnterpriseToAdd(body);
+    await enterpriseController.createEnterprise(body);
+    response.statusCode = Code.CREATED;
+    response.statusMessage = Message.CREATED;
+    response.send({
+      name: "Empresa",
+      code: Code.CREATED,
+      description: "Empresa creada",
+    });
+  } catch (error) {
+    const CODE_ERROR = error.errorCode || Code.INTERNAL_SERVER_ERROR;
+    response.statusCode = CODE_ERROR;
+    response.statusMessage = Message.ERROR;
+    response.json(error.jsonResponse());
+  }
+});
+
 module.exports = router;

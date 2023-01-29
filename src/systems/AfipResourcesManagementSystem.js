@@ -2,35 +2,10 @@ const DataBaseError = require("../errors/DataBaseError");
 const SqlPersistenSystem = require("./SqlPersistentSystem");
 const mysqlConnection = require("../database");
 
-class EnterpriseManagementSystem extends SqlPersistenSystem {
-  #buildSQLSelectEnterprisesRequestFilteredBy = (queryParams) => {
-    let filterSql = "WHERE ";
-    for (const attribute in queryParams) {
-      filterSql += `${attribute} = '${queryParams[attribute]}'`;
-    }
-    if (filterSql === "WHERE ") filterSql = "";
-    return `
-        SELECT 
-            e.*,
-            ap.Nombre AS Provincia, 
-            apa.Nombre AS Pais, 
-            ar.Nombre AS Responsable, 
-            ib.Nombre AS IngBrutoCondicion
-        FROM 
-            empresas e 
-            LEFT JOIN usuariosxempresas uxe ON e.idempresa = uxe.idEmpresa 
-            LEFT JOIN afipprovincias ap ON e.AFIPProvinciaId = ap.AfipProvinciaId
-            LEFT JOIN afippaises apa ON e.AFIPPaisId = apa.AFIPPaisId
-            LEFT JOIN afipresponsables ar ON e.AFIPResponsableId = ar.AfipResponsableId
-            LEFT JOIN ingbrutoscondiciones ib ON e.AFIPIngBrutosId = ib.IngBrutosCondicionId
-        ${filterSql}
-        GROUP BY e.idempresa`;
-  };
-
-  async getEnterprisesFilteredBy(queryParams) {
+class AfipResourcesManagementSystem extends SqlPersistenSystem {
+  async getProvinces() {
     try {
-      const sqlSelect =
-        this.#buildSQLSelectEnterprisesRequestFilteredBy(queryParams);
+      const sqlSelect = "SELECT AfipProvinciaId, Nombre FROM afipprovincias";
       const db = await new Promise((resolve, reject) => {
         mysqlConnection.getConnection((error, db) => {
           if (error) {
@@ -56,11 +31,9 @@ class EnterpriseManagementSystem extends SqlPersistenSystem {
     }
   }
 
-  async getEnterprise(enterpriseId) {
+  async getCountries() {
     try {
-      const sqlSelect = this.#buildSQLSelectEnterprisesRequestFilteredBy({
-        "e.idempresa": enterpriseId,
-      });
+      const sqlSelect = "SELECT AfipPaisId, Nombre FROM afippaises";
       const db = await new Promise((resolve, reject) => {
         mysqlConnection.getConnection((error, db) => {
           if (error) {
@@ -80,15 +53,16 @@ class EnterpriseManagementSystem extends SqlPersistenSystem {
         });
       });
       await db.release();
-      return result[0];
+      return result;
     } catch (error) {
       throw new DataBaseError(error.message);
     }
   }
 
-  async createEnterprise(enterprise) {
+  async getResponsables() {
     try {
-      const sqlInsert = this.buildSQLInsertRequest(enterprise, "empresas");
+      const sqlSelect =
+        "SELECT AfipResponsableId, Nombre FROM afipresponsables";
       const db = await new Promise((resolve, reject) => {
         mysqlConnection.getConnection((error, db) => {
           if (error) {
@@ -98,21 +72,50 @@ class EnterpriseManagementSystem extends SqlPersistenSystem {
           }
         });
       });
-      await new Promise((resolve, reject) => {
-        db.query(sqlInsert, (error, rows, fields) => {
+      const result = await new Promise((resolve, reject) => {
+        db.query(sqlSelect, (error, rows, fields) => {
           if (error) {
             reject(error);
           } else {
-            resolve();
+            resolve(rows);
           }
         });
       });
       await db.release();
-      return null;
+      return result;
+    } catch (error) {
+      throw new DataBaseError(error.message);
+    }
+  }
+
+  async getIncomes() {
+    try {
+      const sqlSelect =
+        "SELECT IngBrutosCondicionId, Nombre FROM ingbrutoscondiciones";
+      const db = await new Promise((resolve, reject) => {
+        mysqlConnection.getConnection((error, db) => {
+          if (error) {
+            reject(error);
+          } else {
+            resolve(db);
+          }
+        });
+      });
+      const result = await new Promise((resolve, reject) => {
+        db.query(sqlSelect, (error, rows, fields) => {
+          if (error) {
+            reject(error);
+          } else {
+            resolve(rows);
+          }
+        });
+      });
+      await db.release();
+      return result;
     } catch (error) {
       throw new DataBaseError(error.message);
     }
   }
 }
 
-module.exports = EnterpriseManagementSystem;
+module.exports = AfipResourcesManagementSystem;

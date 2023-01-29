@@ -77,7 +77,7 @@ class UserManagementSystem {
         });
       });
       await db.release();
-      return result[0];
+      return result[0] ? result[0] : {};
     } catch (error) {
       throw new DataBaseError(error.message);
     }
