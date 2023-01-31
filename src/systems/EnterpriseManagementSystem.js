@@ -113,6 +113,72 @@ class EnterpriseManagementSystem extends SqlPersistenSystem {
       throw new DataBaseError(error.message);
     }
   }
+
+  async updateEnterprise(enterpriseId, enterprise) {
+    try {
+      const sqlUpdate = this.buildSQLUpdateRequest(
+        "idempresa",
+        enterpriseId,
+        enterprise,
+        "empresas"
+      );
+      const db = await new Promise((resolve, reject) => {
+        mysqlConnection.getConnection((error, db) => {
+          if (error) {
+            reject(error);
+          } else {
+            resolve(db);
+          }
+        });
+      });
+      await new Promise((resolve, reject) => {
+        db.query(sqlUpdate, (error, rows, fields) => {
+          if (error) {
+            reject(error);
+          } else {
+            resolve();
+          }
+        });
+      });
+      await db.release();
+      return null;
+    } catch (error) {
+      throw new DataBaseError(error.message);
+    }
+  }
+
+  async deleteEnterprise(enterpriseId) {
+    try {
+      const sqlDelete = this.buildSQLDeleteRequest(
+        "idempresa",
+        enterpriseId,
+        "empresas"
+      );
+      console.log(sqlDelete);
+      const db = await new Promise((resolve, reject) => {
+        mysqlConnection.getConnection((error, db) => {
+          if (error) {
+            reject(error);
+          } else {
+            resolve(db);
+          }
+        });
+      });
+      await new Promise((resolve, reject) => {
+        db.query(sqlDelete, (error, rows, fields) => {
+          if (error) {
+            reject(error);
+          } else {
+            resolve();
+          }
+        });
+      });
+      await db.release();
+      return null;
+    } catch (error) {
+      throw new DataBaseError(error.message);
+    }
+  }
 }
 
 module.exports = EnterpriseManagementSystem;

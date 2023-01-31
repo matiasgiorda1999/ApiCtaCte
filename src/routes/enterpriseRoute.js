@@ -68,4 +68,53 @@ router.post("/empresas", checkJwt, async ({ body }, response) => {
   }
 });
 
+router.put(
+  "/empresas/:enterprise_id",
+  checkJwt,
+  async ({ body, params }, response) => {
+    try {
+      const enterpriseController = new EnterpriseController();
+      const enterpriseValidationRequest = new EnterpriseValidationRequest();
+      enterpriseValidationRequest.validateEnterpriseToAdd(body);
+      await enterpriseController.updateEnterprise(params.enterprise_id, body);
+      response.statusCode = Code.CREATED;
+      response.statusMessage = Message.CREATED;
+      response.send({
+        name: "Empresa",
+        code: Code.CREATED,
+        description: "Empresa editada",
+      });
+    } catch (error) {
+      const CODE_ERROR = error.errorCode || Code.INTERNAL_SERVER_ERROR;
+      response.statusCode = CODE_ERROR;
+      response.statusMessage = Message.ERROR;
+      response.json(error.jsonResponse());
+    }
+  }
+);
+
+router.delete(
+  "/empresas/:enterprise_id",
+  checkJwt,
+  async ({ params }, response) => {
+    try {
+      const enterpriseController = new EnterpriseController();
+      await enterpriseController.deleteEnterprise(params.enterprise_id);
+      response.statusCode = Code.CREATED;
+      response.statusMessage = Message.CREATED;
+      response.send({
+        name: "Empresa",
+        code: Code.OK,
+        description: "Empresa eliminada",
+      });
+    } catch (error) {
+      console.log(error);
+      const CODE_ERROR = error.errorCode || Code.INTERNAL_SERVER_ERROR;
+      response.statusCode = CODE_ERROR;
+      response.statusMessage = Message.ERROR;
+      response.json(error.jsonResponse());
+    }
+  }
+);
+
 module.exports = router;
