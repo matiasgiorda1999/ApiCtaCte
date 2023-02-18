@@ -17,6 +17,10 @@ class UserController {
   async getClientData(queryParams) {
     return await this.#userMangementSystem.getClientData(queryParams);
   }
+
+  async getUsers(nameFilter) {
+    return await this.#userMangementSystem.getUsers(nameFilter);
+  }
 }
 
 module.exports = UserController;

@@ -10,7 +10,7 @@ const queryParamsValidations = Joi.object({
 const enterpriseToAddValidation = Joi.object({
   CUIT: Joi.string().min(13).max(13).required(),
   nombre: Joi.string().min(1).max(45).required(),
-  imagenURL: Joi.string().min(1).max(2000).required(),
+  imagenURL: Joi.allow(),
   calle: Joi.string().min(1).max(45).required(),
   numeroCalle: Joi.number().integer().required(),
   Localidad: Joi.string().min(1).max(45).required(),

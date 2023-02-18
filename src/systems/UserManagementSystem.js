@@ -38,6 +38,23 @@ class UserManagementSystem {
     }
   }
 
+  async getUsers(nameFilter) {
+    try {
+      const response = await axios.get(
+        `https://${process.env.AUTH0_API_CLIENT_DOMAIN}/api/v2/users?fields=user_id%2Cemail&include_fields=true&q=email%3A${nameFilter}*`,
+        {
+          headers: {
+            Authorization: `Bearer ${await this.#accessTokenForManageAuth0()}`,
+            "Accept-Encoding": "gzip,deflate,compress",
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
   #buildSQLSelectClientData = ({ enterprise, cuit }) => {
     return `SELECT c.ClienteId AS ClienteId, 
                   c.Nombre AS Nombre, 

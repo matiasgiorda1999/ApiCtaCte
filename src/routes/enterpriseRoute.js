@@ -5,6 +5,16 @@ const Message = require("../reponses/responseMessage");
 const checkJwt = require("../validationRequest/SecurityValidation");
 const express = require("express");
 const router = express.Router();
+//---- imagen ----
+const multer = require("multer");
+const path = require("path");
+const diskStorage = multer.diskStorage({
+  destination: path.join(__dirname, "../images"),
+  filename: (req, file, cb) => {
+    cb(null, file.originalname);
+  },
+});
+const fileUpload = multer({ storage: diskStorage }).single("imagenURL");
 
 router.get(
   "/empresas/:enterprise_id",
@@ -47,11 +57,12 @@ router.get("/empresas", checkJwt, async ({ query }, response) => {
   }
 });
 
-router.post("/empresas", checkJwt, async ({ body }, response) => {
+router.post("/empresas", fileUpload, async ({ body, file }, response) => {
   try {
     const enterpriseController = new EnterpriseController();
     const enterpriseValidationRequest = new EnterpriseValidationRequest();
     enterpriseValidationRequest.validateEnterpriseToAdd(body);
+    body.imagenURL = `http://localhost:3001/${file.originalname}`;
     await enterpriseController.createEnterprise(body);
     response.statusCode = Code.CREATED;
     response.statusMessage = Message.CREATED;
@@ -70,12 +81,16 @@ router.post("/empresas", checkJwt, async ({ body }, response) => {
 
 router.put(
   "/empresas/:enterprise_id",
-  checkJwt,
-  async ({ body, params }, response) => {
+  fileUpload,
+  async ({ body, params, file }, response) => {
     try {
       const enterpriseController = new EnterpriseController();
       const enterpriseValidationRequest = new EnterpriseValidationRequest();
       enterpriseValidationRequest.validateEnterpriseToAdd(body);
+      if (file) body.imagenURL = `http://localhost:3001/${file.originalname}`;
+      else {
+        delete body.imagenURL;
+      }
       await enterpriseController.updateEnterprise(params.enterprise_id, body);
       response.statusCode = Code.CREATED;
       response.statusMessage = Message.CREATED;
@@ -85,6 +100,7 @@ router.put(
         description: "Empresa editada",
       });
     } catch (error) {
+      console.log(error);
       const CODE_ERROR = error.errorCode || Code.INTERNAL_SERVER_ERROR;
       response.statusCode = CODE_ERROR;
       response.statusMessage = Message.ERROR;
@@ -108,7 +124,6 @@ router.delete(
         description: "Empresa eliminada",
       });
     } catch (error) {
-      console.log(error);
       const CODE_ERROR = error.errorCode || Code.INTERNAL_SERVER_ERROR;
       response.statusCode = CODE_ERROR;
       response.statusMessage = Message.ERROR;

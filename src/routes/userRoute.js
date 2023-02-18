@@ -47,4 +47,20 @@ router.get("/usario/datos", checkJwt, async ({ query }, response) => {
   }
 });
 
+router.get("/usuarios", checkJwt, async ({ query }, response) => {
+  try {
+    const userController = new UserController();
+    const data = await userController.getUsers(query.nameFilter);
+    response.statusCode = Code.OK;
+    response.statusMessage = Message.OK;
+    response.send(data);
+  } catch (error) {
+    const CODE_ERROR = error.errorCode || Code.INTERNAL_SERVER_ERROR;
+    response.statusCode = CODE_ERROR;
+    response.statusMessage = Message.ERROR;
+    console.log(error);
+    response.json(error.jsonResponse());
+  }
+});
+
 module.exports = router;
