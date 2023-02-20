@@ -33,6 +33,13 @@ class EnterpriseController {
       queryParams
     );
   }
+
+  async assignUsersToEnterprise(enterprise, users) {
+    return await this.#enterpriseManagementSystem.assignUsersToEnterprise(
+      enterprise,
+      users
+    );
+  }
 }
 
 module.exports = EnterpriseController;

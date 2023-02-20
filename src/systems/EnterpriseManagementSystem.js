@@ -179,6 +179,41 @@ class EnterpriseManagementSystem extends SqlPersistenSystem {
       throw new DataBaseError(error.message);
     }
   }
+
+  async assignUsersToEnterprise(enterpriseId, users) {
+    try {
+      let sql = [];
+      users.forEach((user) => {
+        sql.push(
+          `INSERT INTO usuariosxempresas (idUsuario,idEmpresa) VALUES ('${user.user_id}','${enterpriseId}')`
+        );
+      });
+      const db = await new Promise((resolve, reject) => {
+        mysqlConnection.getConnection((error, db) => {
+          if (error) {
+            reject(error);
+          } else {
+            resolve(db);
+          }
+        });
+      });
+      sql.forEach(async (sqlQuery) => {
+        await new Promise((resolve, reject) => {
+          db.query(sqlQuery, (error, rows, fields) => {
+            if (error) {
+              reject(error);
+            } else {
+              resolve();
+            }
+          });
+        });
+      });
+      await db.release();
+      return null;
+    } catch (error) {
+      throw new DataBaseError(error.message);
+    }
+  }
 }
 
 module.exports = EnterpriseManagementSystem;

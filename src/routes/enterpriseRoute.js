@@ -100,7 +100,6 @@ router.put(
         description: "Empresa editada",
       });
     } catch (error) {
-      console.log(error);
       const CODE_ERROR = error.errorCode || Code.INTERNAL_SERVER_ERROR;
       response.statusCode = CODE_ERROR;
       response.statusMessage = Message.ERROR;
@@ -124,6 +123,33 @@ router.delete(
         description: "Empresa eliminada",
       });
     } catch (error) {
+      const CODE_ERROR = error.errorCode || Code.INTERNAL_SERVER_ERROR;
+      response.statusCode = CODE_ERROR;
+      response.statusMessage = Message.ERROR;
+      response.json(error.jsonResponse());
+    }
+  }
+);
+
+router.post(
+  "/asignar-usuarios/empresas/:enterprise_id",
+  checkJwt,
+  async ({ body, params }, response) => {
+    try {
+      const enterpriseController = new EnterpriseController();
+      await enterpriseController.assignUsersToEnterprise(
+        params.enterprise_id,
+        body.users
+      );
+      response.statusCode = Code.CREATED;
+      response.statusMessage = Message.CREATED;
+      response.send({
+        name: "Empresa",
+        code: Code.OK,
+        description: "Asignaciones de usuarios realizadas",
+      });
+    } catch (error) {
+      console.log(error);
       const CODE_ERROR = error.errorCode || Code.INTERNAL_SERVER_ERROR;
       response.statusCode = CODE_ERROR;
       response.statusMessage = Message.ERROR;
